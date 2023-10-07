@@ -7,19 +7,21 @@ interface IThemeContextType {
 }
 const ThemeContext = createContext<IThemeContextType | undefined>(undefined);
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState("system");
+  const handleThemeChange = () => {
+    if (
+      localStorage.theme === "dark" ||
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      setMode("dark");
+      document.documentElement.classList.add("dark");
+    } else {
+      setMode("light");
+      document.documentElement.classList.remove("dark");
+    }
+  };
   useEffect(() => {
-    const handleThemeChange = () => {
-      if (mode === "dark") {
-        setMode("light");
-        document.documentElement.classList.add("light");
-        document.documentElement.classList.remove("dark");
-      } else {
-        setMode("dark");
-        document.documentElement.classList.add("dark");
-        document.documentElement.classList.remove("light");
-      }
-    };
     handleThemeChange();
   }, [mode]);
   return (

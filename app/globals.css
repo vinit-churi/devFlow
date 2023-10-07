@@ -6,6 +6,13 @@
 
 body {
   font-family: "Inter", sans-serif;
+  /* shadcdn margin-right: 15px issue */
+  /* overflow-y: scroll; */
+}
+/* increasing the specificity */
+/* useful link regarding the issue https://github.com/radix-ui/primitives/issues/1925 */
+html body {
+  margin-right: 0px !important;
 }
 
 @layer utilities {
