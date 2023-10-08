@@ -1,10 +1,41 @@
 import HomeFilters from "@/components/home/HomeFilters";
 import Filter from "@/components/shared/Filter";
+import QuestionCard from "@/components/shared/question/QuestionCard";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
 import Link from "next/link";
 
+type TQuestions = {
+  _id: string;
+  title: string;
+  tags: string[];
+  votes: number;
+  answerCount: number;
+  createdAt: string;
+  views: number;
+}[];
+
+const questions: TQuestions = [
+  {
+    _id: "1",
+    title: "How to use React?",
+    tags: ["react", "javascript"],
+    votes: 10,
+    answerCount: 2,
+    createdAt: "2021-08-12T19:04:28.809Z",
+    views: 100,
+  },
+  {
+    _id: "2",
+    title: "ReduxJs Basics",
+    tags: ["redux", "javascript", "firebase"],
+    votes: 70,
+    answerCount: 7,
+    createdAt: "2021-08-12T19:04:28.809Z",
+    views: 86,
+  },
+];
 export default function Home() {
   return (
     <>
@@ -31,6 +62,15 @@ export default function Home() {
         />
       </div>
       <HomeFilters />
+      <div className="mt-8 flex flex-wrap gap-6">
+        {questions.map((question) => (
+          <QuestionCard
+            key={question._id}
+            question={question}
+            otherClasses="mb-5"
+          />
+        ))}
+      </div>
     </>
   );
 }
