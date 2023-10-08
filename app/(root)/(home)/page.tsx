@@ -1,7 +1,7 @@
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import Filter from "@/components/shared/filter/Filter";
 export default function Home() {
   return (
     <>
@@ -13,7 +13,7 @@ export default function Home() {
           </Button>
         </Link>
       </div>
-      <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
+      <div className="mt-11 flex  gap-5  lg:flex-col">
         <LocalSearch
           route="/"
           iconPosition="left"
@@ -21,7 +21,12 @@ export default function Home() {
           placeholder="Search for questions"
           otherClasses="flex-1"
         />
-        Filter
+        <Filter
+          filterOptions={["All", "Unanswered", "Solved"]}
+          responsive={true}
+          filterLabel="Filter by"
+          filterIcon="/assets/icons/filter.svg"
+        />
       </div>
     </>
   );

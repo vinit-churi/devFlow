@@ -71,3 +71,22 @@ export const BADGE_CRITERIA = {
     GOLD: 100000,
   },
 };
+
+export const homeFilterOptions = [
+  {
+    _id : "1",
+    label: "Newest",
+  },
+  {
+    _id : "2",
+    label: "Recommended",
+  },
+  {
+    _id : "3",
+    label: "Frequent",
+  },
+  {
+    _id : "4",
+    label: "Unanswered",
+  },
+]
