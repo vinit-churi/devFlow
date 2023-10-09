@@ -9,31 +9,31 @@ import QuestionCard from "@/components/cards/QuestionCard";
 
 const questions = [
   {
-    _id: 1,
+    _id: "1",
     title: "How to use React hooks?",
     tags: [
-      { _id: 1, name: "React" },
-      { _id: 2, name: "Hooks" },
+      { _id: "1", name: "React" },
+      { _id: "2", name: "Hooks" },
     ],
     answers: [],
     upvotes: 10,
-    views: 100,
+    views: 151515151,
     author: {
-      _id: 1,
+      _id: "1",
       name: "John Doe",
       avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
     },
     createdAt: new Date(),
   },
   {
-    _id: 2,
+    _id: "2",
     title: "What is the difference between var, let and const?",
-    tags: [{ _id: 3, name: "JavaScript" }],
+    tags: [{ _id: "3", name: "JavaScript" }],
     answers: [],
     upvotes: 5,
     views: 50,
     author: {
-      _id: 2,
+      _id: "2",
       name: "Jane Smith",
       avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
     },
@@ -69,7 +69,7 @@ export default function Home() {
       </div>
       <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {questions.length < 0 ? (
+        {questions.length > 0 ? (
           <>
             {questions.map((question) => (
               <QuestionCard
