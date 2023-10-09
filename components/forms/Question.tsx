@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { QuestionsSchema } from "@/lib/validations";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
+import { createQuestion } from "@/lib/actions/question.action";
 
 const Question = () => {
   const editorRef = useRef(null);
@@ -66,12 +67,12 @@ const Question = () => {
     const tags = field.value.filter((t: string) => t !== tag);
     form.setValue("tags", tags);
   }
-  function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+  async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+    console.log(form.getValues());
     setIsSubmitting(true);
     console.log(values);
     try {
-      // make an async call to api
-      // navigate back to home page
+      await createQuestion({});
     } catch {
     } finally {
       setIsSubmitting(false);
@@ -121,6 +122,11 @@ const Question = () => {
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                   initialValue={""}
+                  onBlur={field.onBlur}
+                  onEditorChange={(content) => {
+                    // console.log(content);
+                    field.onChange(content);
+                  }}
                   init={{
                     height: 350,
                     menubar: false,
