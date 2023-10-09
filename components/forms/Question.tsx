@@ -205,7 +205,7 @@ const Question = () => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="primary-gradient !text-light-900"
+          className="primary-gradient w-max !text-light-900"
         >
           {isSubmitting ? (
             <>{type === "edit" ? "Editing..." : "Posting..."}</>
