@@ -1,8 +1,7 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Button } from "@/components/ui/button";
-
 import {
   Form,
   FormControl,
@@ -22,6 +21,7 @@ import Image from "next/image";
 
 const Question = () => {
   const editorRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
     defaultValues: {
@@ -30,7 +30,6 @@ const Question = () => {
       tags: [],
     },
   });
-  console.log(form);
   //   const log = () => {
   //     if (editorRef.current) {
   //       console.log(editorRef.current.getContent());
@@ -67,7 +66,18 @@ const Question = () => {
     const tags = field.value.filter((t: string) => t !== tag);
     form.setValue("tags", tags);
   }
-  function onSubmit(values: z.infer<typeof QuestionsSchema>) {}
+  function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+    setIsSubmitting(true);
+    console.log(values);
+    try {
+      // make an async call to api
+      // navigate back to home page
+    } catch {
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+  const type: any = "create";
   return (
     <Form {...form}>
       <form
@@ -192,7 +202,17 @@ const Question = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="primary-gradient !text-light-900"
+        >
+          {isSubmitting ? (
+            <>{type === "edit" ? "Editing..." : "Posting..."}</>
+          ) : (
+            <>{type === "edit" ? "Edit Question" : "Ask a question"}</>
+          )}
+        </Button>
       </form>
     </Form>
   );
