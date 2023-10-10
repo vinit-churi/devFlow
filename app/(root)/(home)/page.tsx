@@ -6,43 +6,31 @@ import { HomePageFilters } from "@/constants/filters";
 import Link from "next/link";
 import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/cards/QuestionCard";
+import { getQuestions } from "@/lib/actions/question.action";
 
-const questions = [
-  {
-    _id: "1",
-    title: "How to use React hooks?",
-    tags: [
-      { _id: "1", name: "React" },
-      { _id: "2", name: "Hooks" },
-    ],
-    answers: [],
-    upvotes: 10,
-    views: 151515151,
-    author: {
-      _id: "1",
-      name: "John Doe",
-      avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
-    },
-    createdAt: new Date(),
-  },
-  {
-    _id: "2",
-    title: "What is the difference between var, let and const?",
-    tags: [{ _id: "3", name: "JavaScript" }],
-    answers: [],
-    upvotes: 5,
-    views: 50,
-    author: {
-      _id: "2",
-      name: "Jane Smith",
-      avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
-    },
-    createdAt: new Date(),
-  },
-  // add more mock data here
-];
+// const questions = [
+//   {
+//     _id: "1",
+//     title: "How to use React hooks?",
+//     tags: [
+//       { _id: "1", name: "React" },
+//       { _id: "2", name: "Hooks" },
+//     ],
+//     answers: [],
+//     upvotes: 10,
+//     views: 151515151,
+//     author: {
+//       _id: "1",
+//       name: "John Doe",
+//       avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
+//     },
+//     createdAt: new Date(),
+//   },
+// ];
 
-export default function Home() {
+export default async function Home() {
+  const result = await getQuestions({});
+  console.log(result.questions);
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -69,9 +57,9 @@ export default function Home() {
       </div>
       <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {questions.length > 0 ? (
+        {result.questions.length > 0 ? (
           <>
-            {questions.map((question) => (
+            {result.questions.map((question) => (
               <QuestionCard
                 key={question._id}
                 _id={question._id}
