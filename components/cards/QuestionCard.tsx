@@ -9,7 +9,7 @@ type TQuestionCard = {
   title: string;
   tags: { _id: string; name: string }[];
   answers: Array<object>;
-  upvotes: number;
+  upvotes: string[];
   views: number;
   author: {
     _id: string;
@@ -68,7 +68,7 @@ const QuestionCard = ({
           imgUrl="/assets/icons/like.svg"
           alt="upvotes"
           title="Votes"
-          value={shortenNumber(upvotes)}
+          value={shortenNumber(upvotes.length)}
           textStyles="text-dark400_light800 small-medium"
         />
         <Metric
