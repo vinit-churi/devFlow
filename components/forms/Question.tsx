@@ -68,11 +68,12 @@ const Question = () => {
     form.setValue("tags", tags);
   }
   async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+    console.log("======================================");
     console.log(form.getValues());
-    setIsSubmitting(true);
     console.log(values);
+    setIsSubmitting(true);
     try {
-      await createQuestion({});
+      await createQuestion(values);
     } catch {
     } finally {
       setIsSubmitting(false);

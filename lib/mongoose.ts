@@ -10,7 +10,7 @@ export const connectToDatabase = async () => {
     }
     if(isConnected){
         console.log("=> using existing database connection");
-        return null;
+        return true;
     }
 
     try{
@@ -19,8 +19,10 @@ export const connectToDatabase = async () => {
         });
         console.log("=> new database connection");
         isConnected = true;
+        return true;
     }catch(error){
         console.log("=> error while connecting with database");
+        return null;
     }finally{
         console.log("=> attempt to connect with database finished");
     }
