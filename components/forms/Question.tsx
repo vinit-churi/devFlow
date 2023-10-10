@@ -82,7 +82,7 @@ const Question = ({ mongoUserId }: IQuestionProps) => {
     try {
       await createQuestion({
         title: values.title,
-        explanation: values.explanation,
+        content: values.explanation,
         tags: values.tags,
         author: JSON.parse(mongoUserId),
         path: pathname,
