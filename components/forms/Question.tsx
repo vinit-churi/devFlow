@@ -19,8 +19,16 @@ import { QuestionsSchema } from "@/lib/validations";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
 import { createQuestion } from "@/lib/actions/question.action";
+import { useRouter, usePathname } from "next/navigation";
 
-const Question = () => {
+interface IQuestionProps {
+  mongoUserId: string;
+}
+
+const Question = ({ mongoUserId }: IQuestionProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  console.log(pathname);
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof QuestionsSchema>>({
@@ -72,7 +80,14 @@ const Question = () => {
     setIsSubmitting(true);
     console.log(values);
     try {
-      await createQuestion({});
+      await createQuestion({
+        title: values.title,
+        explanation: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+        path: pathname,
+      });
+      router.push("/");
     } catch {
     } finally {
       setIsSubmitting(false);
@@ -124,7 +139,7 @@ const Question = () => {
                   initialValue={""}
                   onBlur={field.onBlur}
                   onEditorChange={(content) => {
-                    // console.log(content);
+                    console.log(content);
                     field.onChange(content);
                   }}
                   init={{
