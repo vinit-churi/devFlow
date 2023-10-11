@@ -2,7 +2,11 @@
 
 import User from "@/database/user.model";
 import { connectToDatabase } from "../mongoose";
-import { CreateUserParams, UpdateUserParams } from "./shared.types";
+import {
+  CreateUserParams,
+  DeleteUserParams,
+  UpdateUserParams,
+} from "./shared.types";
 import { revalidatePath } from "next/cache";
 import Question from "@/database/question.model";
 
@@ -44,16 +48,17 @@ export async function updateUser(userData: UpdateUserParams) {
     throw error;
   }
 }
-export async function deleteUser(id: string) {
+export async function deleteUser(params: DeleteUserParams) {
   try {
     await connectToDatabase();
-    const user = await User.findOne({ clerkId: id });
+    const { clerkId } = params;
+    const user = await User.findOne({ clerkId });
     if (!user) throw new Error("User not found");
     // delete everything related to the user
     // const userQuestionIds = await Question.find({ "author": user._id }).distinct("_id");
     // delete all questions
     await Question.deleteMany({ author: user._id });
-    const deletedUser = await User.findOneAndDelete({ clerkId: id });
+    const deletedUser = await User.findOneAndDelete({ clerkId });
     return deletedUser;
   } catch (error) {
     console.log(error);
