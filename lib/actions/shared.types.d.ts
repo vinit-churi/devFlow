@@ -111,9 +111,9 @@ export interface GetTopInteractedTagsParams {
 export interface CreateUserParams {
   clerkId: string;
   name: string;
-  username: string;
+  username?: string;
   email: string;
-  picture: string;
+  picture?: string;
 }
 
 export interface GetUserByIdParams {
