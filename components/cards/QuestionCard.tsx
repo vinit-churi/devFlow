@@ -14,7 +14,7 @@ type TQuestionCard = {
   author: {
     _id: string;
     name: string;
-    avatar: string;
+    picture: string;
   };
   createdAt: Date;
 };
@@ -56,7 +56,7 @@ const QuestionCard = ({
       </div>
       <div className="flex-between mt-6 flex w-full flex-wrap gap-3 ">
         <Metric
-          imgUrl={"/assets/icons/avatar.svg"}
+          imgUrl={author.picture}
           alt="user"
           title={` - asked ${getTimestamp(createdAt)}`}
           href={`/users/${author._id}`}

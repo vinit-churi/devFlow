@@ -8,26 +8,6 @@ import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/cards/QuestionCard";
 import { getQuestions } from "@/lib/actions/question.action";
 
-// const questions = [
-//   {
-//     _id: "1",
-//     title: "How to use React hooks?",
-//     tags: [
-//       { _id: "1", name: "React" },
-//       { _id: "2", name: "Hooks" },
-//     ],
-//     answers: [],
-//     upvotes: 10,
-//     views: 151515151,
-//     author: {
-//       _id: "1",
-//       name: "John Doe",
-//       avatar: "https://xsgames.co/randomusers/avatar.php?g=male",
-//     },
-//     createdAt: new Date(),
-//   },
-// ];
-
 export default async function Home() {
   const result = await getQuestions({});
   return (
