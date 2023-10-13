@@ -16,8 +16,16 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useTheme } from "@/context/ThemeProvider";
 import { Button } from "../ui/button";
 import Image from "next/image";
-
-const Answer = () => {
+import { usePathname } from "next/navigation";
+import { createAnswer } from "@/lib/actions/answer.action";
+const Answer = ({
+  questionID,
+  mongoUserID,
+}: {
+  questionID: string;
+  mongoUserID: string | undefined;
+}) => {
+  const pathname = usePathname();
   const { mode } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof AnswerSchema>>({
@@ -27,8 +35,24 @@ const Answer = () => {
     },
   });
   const editorRef = useRef(null);
-  function handleCreateAnswer() {
-    // console.log(data);
+  async function handleCreateAnswer() {
+    if (!mongoUserID) return;
+    // setIsSubmitting(true);
+    console.log(form.getValues());
+    const { answer } = form.getValues();
+    console.log({
+      content: answer,
+      author: JSON.parse(mongoUserID),
+      question: JSON.parse(questionID),
+      path: pathname,
+    });
+    await createAnswer({
+      content: answer,
+      author: JSON.parse(mongoUserID),
+      question: JSON.parse(questionID),
+      path: pathname,
+    });
+    // setIsSubmitting(false);
   }
   return (
     <div className="w-full">

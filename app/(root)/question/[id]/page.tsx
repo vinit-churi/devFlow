@@ -3,12 +3,19 @@ import Metric from "@/components/shared/Metric";
 import ParseHTML from "@/components/shared/ParseHTML";
 import RenderTag from "@/components/shared/RenderTag";
 import { getQuestionById } from "@/lib/actions/question.action";
+import { getUserById } from "@/lib/actions/user.action";
 import { getTimestamp, shortenNumber } from "@/lib/utils";
+import { auth } from "@clerk/nextjs";
+
 import Image from "next/image";
 import Link from "next/link";
 
 const page = async ({ params }: { params: { id: string } }) => {
-  console.log(params);
+  const { userId } = auth();
+  let userObj;
+  if (userId) {
+    userObj = await getUserById({ userId });
+  }
   const result = await getQuestionById({ questionId: params.id });
   console.log(result);
   return (
@@ -68,7 +75,10 @@ const page = async ({ params }: { params: { id: string } }) => {
           />
         ))}
       </div>
-      <Answer />
+      <Answer
+        questionID={JSON.stringify(result._id)}
+        mongoUserID={userObj ? JSON.stringify(userObj._id) : undefined}
+      />
     </div>
   );
 };
