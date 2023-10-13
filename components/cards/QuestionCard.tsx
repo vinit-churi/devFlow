@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
 import { getTimestamp, shortenNumber } from "@/lib/utils";
@@ -36,7 +35,7 @@ const QuestionCard = ({
           <span className="subtle-medium text-dark400_light700 line-clamp-1 flex sm:hidden">
             asked {getTimestamp(createdAt)}
           </span>
-          <Link href={`/questions/${_id}`}>
+          <Link href={`/question/${_id}`}>
             <h3 className="sm:h3-bold base-semibold text-dark100_light900 line-clamp-2 flex-1 cursor-pointer">
               {title}
             </h3>
