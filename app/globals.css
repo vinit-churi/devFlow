@@ -170,3 +170,8 @@ code {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* when user try to scroll out of the viewport in dark mode */
+html.dark {
+  background-color: black;
+}
