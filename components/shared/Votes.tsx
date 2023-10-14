@@ -20,7 +20,7 @@ const Votes = ({ voteObject, votesData, mongoUserId }: Props) => {
     downvotes: votesData.downvotes,
   });
   const [isUpVoted, setIsUpVoted] = useState(votesData.isUpVoted);
-  const [isDownVoted, setIsDownVoted)] = useState(votesData.isDownVoted);
+  const [isDownVoted, setIsDownVoted] = useState(votesData.isDownVoted);
   const [isVoting, setIsVoting] = useState(false);
 
   async function handleVote(voteType: string) {
@@ -30,16 +30,6 @@ const Votes = ({ voteObject, votesData, mongoUserId }: Props) => {
         mongoUserId,
         voteObject,
       });
-
-      /*
-       * data object will be like this
-       * {
-       *  isUpVoted: boolean;
-       *  isDownVoted: boolean;
-       *  upvotes: number;
-       *  downvotes: number;
-       * }
-       */
       if (voteType === "upvote") {
         setIsUpVoted(data.isUpVoted);
         setVoteCount({
@@ -57,12 +47,18 @@ const Votes = ({ voteObject, votesData, mongoUserId }: Props) => {
       console.log(error);
     }
   }
-  return <div>
-    {isUpVoted ? <p>Upvoted</p> : "not upvoted"}
-    <button disabled={isVoting} onClick={() => handleVote("upvote")}>Upvote {voteCount.upvotes}</button>
-    {isDownVoted ? <p>Downvoted</p> : "not downvoted"}
-    <button disabled={isVoting} onClick={() => handleVote("downvote")}>Downvote {voteCount.downvotes}</button>
-  </div>;
+  return (
+    <div>
+      {isUpVoted ? <p>Upvoted</p> : "not upvoted"}
+      <button disabled={isVoting} onClick={() => handleVote("upvote")}>
+        Upvote {voteCount.upvotes}
+      </button>
+      {isDownVoted ? <p>Downvoted</p> : "not downvoted"}
+      <button disabled={isVoting} onClick={() => handleVote("downvote")}>
+        Downvote {voteCount.downvotes}
+      </button>
+    </div>
+  );
 };
 
 export default Votes;
