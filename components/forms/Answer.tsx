@@ -16,8 +16,17 @@ import { Editor } from "@tinymce/tinymce-react";
 import { useTheme } from "@/context/ThemeProvider";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { createAnswer } from "@/lib/actions/answer.action";
+import { usePathname } from "next/navigation";
 
-const Answer = () => {
+interface Props {
+  question: string;
+  questionId: string;
+  authorId: string;
+}
+
+const Answer = ({ question, questionId, authorId }: Props) => {
+  const pathname = usePathname();
   const { mode } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof AnswerSchema>>({
@@ -27,8 +36,27 @@ const Answer = () => {
     },
   });
   const editorRef = useRef(null);
-  function handleCreateAnswer() {
+  async function handleCreateAnswer(values: z.infer<typeof AnswerSchema>) {
     // console.log(data);
+    setIsSubmitting(true);
+
+    try {
+      await createAnswer({
+        content: values.answer,
+        author: JSON.parse(authorId),
+        question: JSON.parse(questionId),
+        path: pathname,
+      });
+      form.reset();
+      if (editorRef.current) {
+        const editor = editorRef.current as any;
+        editor.setContent("");
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
   return (
     <div className="w-full">
@@ -67,7 +95,6 @@ const Answer = () => {
                     apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                     onBlur={field.onBlur}
                     onEditorChange={(content) => {
-                      console.log(content);
                       field.onChange(content);
                     }}
                     init={{
