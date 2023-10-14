@@ -29,4 +29,7 @@
     > This component will receive prop
     > votes type => question | answer
     > current votes data => upvotes and downvotes count
+    > the votes data should be loaded the the parent component 
+    > i.e in the question page, I think the data is already fetch as we are required to render it.
+    
 
