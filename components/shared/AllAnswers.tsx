@@ -28,7 +28,7 @@ const AllAnswers = async ({
 
   const { userId: clerkId } = auth();
   // @ts-ignore
-  let mongoUser: null | object;
+  let mongoUser: null | any;
   if (clerkId) {
     mongoUser = await getUserById({ userId: clerkId });
   }
@@ -41,8 +41,8 @@ const AllAnswers = async ({
       <div>
         {result?.answers.map((answer) => (
           <article key={answer._id} className="light-border border-b py-10">
-            <div className="flex items-center justify-between">
-              <div className="mb-8 flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
+            <div className="mb-8 flex items-center justify-between">
+              <div className=" flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
                 <Link
                   href={`/profile/${answer.author.clerkId}`}
                   className="flex flex-1 items-start gap-1 sm:items-center"
