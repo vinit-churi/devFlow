@@ -3,6 +3,7 @@
 import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.action";
 import {
   downvoteQuestion,
+  toggleSaveQuestion,
   upvoteQuestion,
 } from "@/lib/actions/question.action";
 import { shortenNumber } from "@/lib/utils";
@@ -74,8 +75,14 @@ const Votes = ({
       return null;
     }
   }
-  function handleSave() {
+  async function handleSave() {
     console.log("handleSave");
+    if (!userId) return console.log("not logged in");
+    try {
+      await toggleSaveQuestion({ questionId: itemId, userId, path: pathname });
+    } catch (err) {
+      console.log(err);
+    }
   }
   return (
     <div className="flex gap-5">
@@ -130,7 +137,7 @@ const Votes = ({
           height={18}
           alt="star"
           className="cursor-pointer"
-          onClick={() => handleSave}
+          onClick={handleSave}
         />
       )}
     </div>

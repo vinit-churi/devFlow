@@ -8,6 +8,7 @@ import {
   GetQuestionByIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
+  ToggleSaveQuestionParams,
 } from "./shared.types";
 import User from "@/database/user.model";
 import { revalidatePath } from "next/cache";
@@ -133,6 +134,26 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
       new: true,
     });
     if (!question) throw new Error("Question not found");
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
+  try {
+    await connectToDatabase();
+    const { questionId, userId, path } = params;
+    const user = await User.findById(userId);
+    if (!user) throw new Error("user not found");
+    const hasSaved = user.saved.includes(questionId);
+    if (hasSaved) {
+      user.saved.pull(questionId);
+      await user.save();
+    } else {
+      user.saved.push(questionId);
+      await user.save();
+    }
     revalidatePath(path);
   } catch (error) {
     console.log(error);
