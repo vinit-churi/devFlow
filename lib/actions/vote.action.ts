@@ -15,20 +15,52 @@ interface ParamsType {
 
 export async function updateVote(params: ParamsType) {
   const { voteType, mongoUserId, voteObject } = params;
-  console.log(voteType, mongoUserId, voteObject);
   try {
     await connectToDatabase();
     if (voteObject.voteFor === "question") {
-      // question
       const question = await Question.findById(voteObject.voteObjectId);
-      console.log(question);
       if (voteType === "upvote") {
-        // check if user has already upvoted
-        // if yes, remove upvote, else add upvote
+        if (question.upvotes.includes(mongoUserId)) {
+          question.upvotes.pull(mongoUserId);
+          const result = await question.save();
+          return {
+            isUpVoted: result.upvotes.includes(mongoUserId),
+            isDownVoted: result.downvotes.includes(mongoUserId),
+            upvotes: result.upvotes.length,
+            downvotes: result.downvotes.length,
+          };
+        } else {
+          question.upvotes.push(mongoUserId);
+          const result = await question.save();
+          return {
+            isUpVoted: result.upvotes.includes(mongoUserId),
+            isDownVoted: result.downvotes.includes(mongoUserId),
+            upvotes: result.upvotes.length,
+            downvotes: result.downvotes.length,
+          };
+        }
       } else {
-        // downvote
-        // check if user has already upvoted
-        // if yes, remove upvote, else add upvote
+        if (question.downvotes.includes(mongoUserId)) {
+          // remove downvote
+          question.downvotes.pull(mongoUserId);
+          const result = await question.save();
+          return {
+            isUpVoted: result.upvotes.includes(mongoUserId),
+            isDownVoted: result.downvotes.includes(mongoUserId),
+            upvotes: result.upvotes.length,
+            downvotes: result.downvotes.length,
+          };
+        } else {
+          // add downvote
+          question.downvotes.push(mongoUserId);
+          const result = await question.save();
+          return {
+            isUpVoted: result.upvotes.includes(mongoUserId),
+            isDownVoted: result.downvotes.includes(mongoUserId),
+            upvotes: result.upvotes.length,
+            downvotes: result.downvotes.length,
+          };
+        }
       }
     } else {
       // answer

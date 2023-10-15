@@ -3,6 +3,7 @@ import AllAnswers from "@/components/shared/AllAnswers";
 import Metric from "@/components/shared/Metric";
 import ParseHTML from "@/components/shared/ParseHTML";
 import RenderTag from "@/components/shared/RenderTag";
+import Votes from "@/components/shared/Votes";
 import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { getTimestamp, shortenNumber } from "@/lib/utils";
@@ -18,6 +19,8 @@ const page = async ({ params }: { params: { id: string } }) => {
   if (clerkId) {
     mongoUser = await getUserById({ userId: clerkId });
   }
+
+  console.log(result.upvotes, "total upvotes");
 
   return (
     <div className="flex-start w-full flex-col">
@@ -37,7 +40,21 @@ const page = async ({ params }: { params: { id: string } }) => {
             {result.author.name}
           </p>
         </Link>
-        <div className="flex justify-end">{/* <Votes /> */}</div>
+        <div className="flex justify-end">
+          <Votes
+            voteObject={{
+              voteFor: "question",
+              voteObjectId: result._id.toString(),
+            }}
+            votesData={{
+              isUpVoted: result.upvotes.includes(mongoUser._id.toString()),
+              isDownVoted: result.downvotes.includes(mongoUser._id.toString()),
+              upvotes: result.upvotes.length,
+              downvotes: result.downvotes.length,
+            }}
+            mongoUserId={mongoUser._id.toString() || ""}
+          />
+        </div>
       </div>
       <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
         {result.title}
@@ -67,6 +84,7 @@ const page = async ({ params }: { params: { id: string } }) => {
       </div>
       <ParseHTML data={result.content} />
       <div className="mt-8 flex w-full flex-wrap gap-2">
+        {/* @ts-ignore */}
         {result.tags.map((tag) => (
           <RenderTag
             key={tag._id}

@@ -25,6 +25,7 @@ const Votes = ({ voteObject, votesData, mongoUserId }: Props) => {
 
   async function handleVote(voteType: string) {
     try {
+      setIsVoting(true);
       const data = await updateVote({
         voteType,
         mongoUserId,
@@ -43,19 +44,20 @@ const Votes = ({ voteObject, votesData, mongoUserId }: Props) => {
           downvotes: data.downvotes,
         });
       }
+      setIsVoting(false);
     } catch (error) {
       console.log(error);
     }
   }
   return (
-    <div>
-      {isUpVoted ? <p>Upvoted</p> : "not upvoted"}
+    <div className={`${isVoting && "opacity-50"}`}>
+      {isUpVoted ? <p>Upvoted</p> : <p>not Upvoted</p>}
       <button disabled={isVoting} onClick={() => handleVote("upvote")}>
         Upvote {voteCount.upvotes}
       </button>
-      {isDownVoted ? <p>Downvoted</p> : "not downvoted"}
+      {isDownVoted ? <p>DowVoted</p> : <p>not DownVoted</p>}
       <button disabled={isVoting} onClick={() => handleVote("downvote")}>
-        Downvote {voteCount.downvotes}
+        DownVote {voteCount.downvotes}
       </button>
     </div>
   );
