@@ -39,7 +39,20 @@ const page = async ({ params }: { params: { id: string } }) => {
           </p>
         </Link>
         <div className="flex justify-end">
-          <Votes />
+          <Votes
+            type="Question"
+            itemId={result._id.toString()}
+            userId={mongoUser?._id.toString()}
+            upvotes={result.upvotes.length}
+            downvotes={result.downvotes.length}
+            hasUpVoted={
+              result.upvotes.includes(mongoUser?._id.toString()) ?? false
+            }
+            hasDownVoted={
+              result.downvotes.includes(mongoUser?._id.toString()) ?? false
+            }
+            hasSaved={mongoUser?.saved.includes(result._id.toString())}
+          />
         </div>
       </div>
       <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
@@ -70,6 +83,7 @@ const page = async ({ params }: { params: { id: string } }) => {
       </div>
       <ParseHTML data={result.content} />
       <div className="mt-8 flex w-full flex-wrap gap-2">
+        {/* @ts-ignore */}
         {result.tags.map((tag) => (
           <RenderTag
             key={tag._id}
