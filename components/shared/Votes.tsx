@@ -1,5 +1,6 @@
 "use client";
 
+import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.action";
 import {
   downvoteQuestion,
   upvoteQuestion,
@@ -41,13 +42,13 @@ const Votes = ({
           path: pathname,
         });
       } else if (type === "Answer") {
-        // await upvoteAnswer({
-        //   questionId: itemId,
-        //   userId,
-        //   hasupVoted: hasUpVoted,
-        //   hasdownVoted: hasDownVoted,
-        //   path: pathname,
-        // });
+        await upvoteAnswer({
+          answerId: itemId,
+          userId,
+          hasupVoted: hasUpVoted,
+          hasdownVoted: hasDownVoted,
+          path: pathname,
+        });
       }
       // TODO: show a toast
       return null;
@@ -61,13 +62,13 @@ const Votes = ({
           path: pathname,
         });
       } else if (type === "Answer") {
-        // await downvoteAnswer({
-        //   questionId: itemId,
-        //   userId,
-        //   hasupVoted: hasUpVoted,
-        //   hasdownVoted: hasDownVoted,
-        //   path: pathname,
-        // });
+        await downvoteAnswer({
+          answerId: itemId,
+          userId,
+          hasupVoted: hasUpVoted,
+          hasdownVoted: hasDownVoted,
+          path: pathname,
+        });
       }
       // TODO: show a toast
       return null;

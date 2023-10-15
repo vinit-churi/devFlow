@@ -5,6 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { getTimestamp } from "@/lib/utils";
 import ParseHTML from "./ParseHTML";
+import Votes from "./Votes";
+import { auth } from "@clerk/nextjs";
+import { getUserById } from "@/lib/actions/user.action";
 
 interface Props {
   questionId: string;
@@ -22,6 +25,13 @@ const AllAnswers = async ({
   filter,
 }: Props) => {
   const result = await getAnswers({ questionId });
+
+  const { userId: clerkId } = auth();
+  // @ts-ignore
+  let mongoUser: null | object;
+  if (clerkId) {
+    mongoUser = await getUserById({ userId: clerkId });
+  }
   return (
     <div className="mt-11 w-full">
       <div className="flex items-center justify-between">
@@ -58,6 +68,19 @@ const AllAnswers = async ({
                 </Link>
                 <div className="flex justify-end">Voting</div>
               </div>
+              <Votes
+                type="Answer"
+                itemId={answer._id.toString()}
+                userId={mongoUser?._id.toString()}
+                upvotes={answer.upvotes.length}
+                downvotes={answer.downvotes.length}
+                hasUpVoted={
+                  answer.upvotes.includes(mongoUser?._id.toString()) ?? false
+                }
+                hasDownVoted={
+                  answer.downvotes.includes(mongoUser?._id.toString()) ?? false
+                }
+              />
             </div>
             <ParseHTML data={answer.content} />
           </article>
