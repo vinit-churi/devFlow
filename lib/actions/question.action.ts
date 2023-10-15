@@ -7,11 +7,13 @@ import {
   CreateQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
+  GetSavedQuestionsParams,
   QuestionVoteParams,
   ToggleSaveQuestionParams,
 } from "./shared.types";
 import User from "@/database/user.model";
 import { revalidatePath } from "next/cache";
+import Answer from "@/database/answer.model";
 
 export async function createQuestion(params: CreateQuestionParams) {
   try {
@@ -155,6 +157,32 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
       await user.save();
     }
     revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// https://mongoosejs.com/docs/populate.html#populate_an_existing_mongoose_document
+export async function getSavedQuestions(params: GetSavedQuestionsParams) {
+  try {
+    await connectToDatabase();
+    const { clerkId } = params;
+    const user = await User.findOne({ clerkId }).populate({
+      path: "saved",
+      model: Question,
+      populate: [
+        { path: "tags", model: Tag, select: "_id name" },
+        { path: "author", model: User },
+        { path: "upvotes", model: User },
+        { path: "downvotes", model: User },
+        { path: "answers", model: Answer },
+      ],
+      select: "_id title tags createdAt views",
+    });
+    if (!user) throw new Error("user not found");
+    return { questions: user.saved };
+    // revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;
