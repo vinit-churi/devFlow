@@ -7,11 +7,13 @@ import {
   CreateQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
+  GetSavedQuestionsParams,
   QuestionVoteParams,
   ToggleSaveQuestionParams,
 } from "./shared.types";
 import User from "@/database/user.model";
 import { revalidatePath } from "next/cache";
+import { FilterQuery } from "mongoose";
 
 export async function createQuestion(params: CreateQuestionParams) {
   try {
@@ -155,6 +157,41 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
       await user.save();
     }
     revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function getSavedQuestions(params: GetSavedQuestionsParams) {
+  try {
+    await connectToDatabase();
+    const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
+    console.log(filter);
+    const query: FilterQuery<typeof Question> = searchQuery
+      ? { title: { $regex: new RegExp(searchQuery, "i") } }
+      : {};
+
+    const user = await User.findOne({ clerkId }).populate({
+      path: "saved",
+      model: Question,
+      match: query,
+      options: {
+        skip: (page - 1) * pageSize,
+        limit: pageSize,
+        sort: { createdAt: -1 },
+      },
+      populate: [
+        { path: "tags", model: Tag },
+        { path: "author", model: User },
+        { path: "upvotes", model: User },
+        { path: "downvotes", model: User },
+      ],
+    });
+    if (!user) throw new Error("User not found");
+    return {
+      questions: user.saved,
+    };
   } catch (error) {
     console.log(error);
     throw error;
