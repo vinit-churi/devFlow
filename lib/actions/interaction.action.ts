@@ -1,28 +1,29 @@
 "use server";
-
-import Interaction from "@/database/interaction.model";
 import { ViewQuestionParams } from "./shared.types";
 import { connectToDatabase } from "../mongoose";
 import Question from "@/database/question.model";
+import Interaction from "@/database/interaction.model";
 
 export async function viewQuestion(params: ViewQuestionParams) {
   await connectToDatabase();
   const { userId, questionId } = params;
 
   await Question.findByIdAndUpdate(questionId, { $inc: { views: 1 } });
-  const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-  const interaction = await Interaction.findOneAndUpdate(
-    {
+  if (userId) {
+    const existingInteraction = await Interaction.findOne({
       user: userId,
-      action: "view",
       question: questionId,
-    },
-    {
-      user: userId,
       action: "view",
-      question: questionId,
-    },
-    options
-  ).exec();
-  return interaction;
+    });
+    if (!existingInteraction) {
+      await Interaction.create({
+        user: userId,
+        question: questionId,
+        action: "view",
+      });
+    } else {
+      // await Interaction.findByIdAndUpdate(existingInteraction._id, { $inc: { views: 1 } });
+      console.log("already viewed");
+    }
+  }
 }

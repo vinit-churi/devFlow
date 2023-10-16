@@ -9,7 +9,7 @@ import {
 import { shortenNumber } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 interface IProps {
   type: string;
   itemId: string;
@@ -32,6 +32,7 @@ const Votes = ({
 }: IProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const isFirstRender = useRef(true);
   async function handleVote(action: string) {
     console.log("handleVote", action);
     if (!userId) return console.log("not logged in");
@@ -88,11 +89,18 @@ const Votes = ({
   }
 
   useEffect(() => {
-    viewQuestion({
-      questionId: itemId,
-      userId,
-    });
-  }, [itemId, userId, pathname, router]);
+    async function updateViewCount() {
+      await viewQuestion({
+        questionId: itemId,
+        userId,
+      });
+      router.refresh();
+    }
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      updateViewCount();
+    }
+  }, [itemId, userId, router, pathname]);
   return (
     <div className="flex gap-5">
       <div className="flex-center gap-2.5">

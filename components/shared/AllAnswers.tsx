@@ -32,6 +32,9 @@ const AllAnswers = async ({
   if (clerkId) {
     mongoUser = await getUserById({ userId: clerkId });
   }
+
+  console.log("debugging");
+
   return (
     <div className="mt-11 w-full">
       <div className="flex items-center justify-between">
