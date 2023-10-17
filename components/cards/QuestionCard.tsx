@@ -16,6 +16,7 @@ type TQuestionCard = {
     picture: string;
   };
   createdAt: Date;
+  clerkId?: string;
 };
 
 const QuestionCard = ({
@@ -27,6 +28,7 @@ const QuestionCard = ({
   views,
   author,
   createdAt,
+  clerkId,
 }: TQuestionCard) => {
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
