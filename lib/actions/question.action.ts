@@ -197,3 +197,33 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     throw error;
   }
 }
+
+interface IGetUserQuestionsProps {
+  userId: string;
+  page?: number;
+  pageSize?: number;
+}
+export async function getUserQuestions(props: IGetUserQuestionsProps) {
+  try {
+    await connectToDatabase();
+    const { userId, page = 1, pageSize = 10 } = props;
+    const [questions, totalQuestions] = await Promise.all([
+      Question.find({ author: userId })
+        .limit(pageSize)
+        .skip((page - 1) * pageSize)
+        .sort({ createdAt: -1 })
+        .populate({ path: "tags", model: Tag })
+        .populate({ path: "author", model: User })
+        .populate({ path: "upvotes", model: User })
+        .populate({ path: "downvotes", model: User }),
+      Question.countDocuments({ author: userId }),
+    ]);
+    return {
+      questions,
+      totalQuestions,
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
