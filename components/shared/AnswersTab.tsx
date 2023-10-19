@@ -1,11 +1,31 @@
+import { getUserAnswers } from "@/lib/actions/user.action";
 import { SearchParamsProps } from "@/types";
-
-interface IProps extends SearchParamsProps {
+import AnswerCard from "../cards/AnswerCard";
+interface Props extends SearchParamsProps {
   userId: string;
   clerkId?: string | null;
 }
-const AnswersTab = ({ searchParams, userId, clerkId }: IProps) => {
-  return <div>AnswersTab</div>;
+const AnswersTab = async ({ searchParams, userId, clerkId }: Props) => {
+  const result = await getUserAnswers({
+    userId,
+    page: searchParams.page ? +searchParams.page : 1,
+  });
+
+  return (
+    <>
+      {result.answers.map((item) => (
+        <AnswerCard
+          key={item._id}
+          clerkId={clerkId}
+          _id={item._id}
+          question={item.question}
+          author={item.author}
+          upvotes={item.upvotes.length}
+          createdAt={item.createdAt}
+        />
+      ))}
+    </>
+  );
 };
 
 export default AnswersTab;
