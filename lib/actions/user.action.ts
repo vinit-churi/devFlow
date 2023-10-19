@@ -13,6 +13,7 @@ import {
 import { revalidatePath } from "next/cache";
 import Question from "@/database/question.model";
 import Answer from "@/database/answer.model";
+import Tag from "@/database/tag.model";
 
 export async function getUserById(params: any) {
   try {
@@ -105,12 +106,47 @@ export async function getUserQuestions(params: GetUserStatsParams) {
   try {
     connectToDatabase();
     const { userId, page = 1, pageSize = 10 } = params;
+    console.log(page, pageSize);
     const totalQuestions = await Question.countDocuments({ author: userId });
     const userQuestions = await Question.find({ author: userId })
       .sort({ views: -1, upvotes: -1 })
       .populate("author", "clerkId name picture")
       .populate("tags", "_id name");
     return { totalQuestions, questions: userQuestions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+interface IGetUserAnswersProps {
+  userId: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export async function getUserAnswers(params: IGetUserAnswersProps) {
+  try {
+    await connectToDatabase();
+    const { userId, page = 1, pageSize = 10 } = params;
+    console.log(page, pageSize);
+    const totalAnswers = await Answer.countDocuments({ author: userId });
+    const userAnswers = await Answer.find({ author: userId })
+      .populate({
+        path: "question",
+        model: Question,
+        populate: [
+          { path: "author", model: User },
+          { path: "tags", model: Tag },
+        ],
+      })
+      .sort({ upvotes: -1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    return {
+      totalAnswers,
+      answers: userAnswers,
+    };
   } catch (error) {
     console.log(error);
     throw error;

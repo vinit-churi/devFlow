@@ -175,3 +175,7 @@ code {
 html.dark {
   background-color: black;
 }
+
+*:focus {
+  outline: 2px solid lawngreen;
+}

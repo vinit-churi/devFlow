@@ -16,7 +16,8 @@ type TQuestionCard = {
     picture: string;
   };
   createdAt: Date;
-  clerkId?: string;
+  clerkId?: string | undefined | null;
+  goTo?: string;
 };
 
 const QuestionCard = ({
@@ -29,6 +30,7 @@ const QuestionCard = ({
   author,
   createdAt,
   clerkId,
+  goTo,
 }: TQuestionCard) => {
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
@@ -37,7 +39,7 @@ const QuestionCard = ({
           <span className="subtle-medium text-dark400_light700 line-clamp-1 flex sm:hidden">
             asked {getTimestamp(createdAt)}
           </span>
-          <Link href={`/question/${_id}`}>
+          <Link href={goTo ?? `/question/${_id}`}>
             <h3 className="sm:h3-bold base-semibold text-dark100_light900 line-clamp-2 flex-1 cursor-pointer">
               {title}
             </h3>
