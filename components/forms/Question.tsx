@@ -24,9 +24,19 @@ import { useTheme } from "@/context/ThemeProvider";
 
 interface IQuestionProps {
   mongoUserId: string;
+  type?: String;
+  prevData?: {
+    title: string;
+    explanation: string;
+    tags: string[];
+  };
 }
 
-const Question = ({ mongoUserId }: IQuestionProps) => {
+const Question = ({
+  mongoUserId,
+  type = "create",
+  prevData,
+}: IQuestionProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const { mode } = useTheme();
@@ -35,9 +45,9 @@ const Question = ({ mongoUserId }: IQuestionProps) => {
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
     defaultValues: {
-      title: "",
-      explanation: "",
-      tags: [],
+      title: prevData?.title ?? "",
+      explanation: prevData?.explanation ?? "",
+      tags: prevData?.tags ?? [],
     },
   });
   //   const log = () => {
@@ -94,7 +104,7 @@ const Question = ({ mongoUserId }: IQuestionProps) => {
       setIsSubmitting(false);
     }
   }
-  const type: any = "create";
+  // const type: any = "create";
   return (
     <Form {...form}>
       <form
