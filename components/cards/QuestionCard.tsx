@@ -2,6 +2,8 @@ import Link from "next/link";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
 import { getTimestamp, shortenNumber } from "@/lib/utils";
+import { SignedIn } from "@clerk/nextjs";
+import EditDeleteAction from "../shared/EditDeleteAction";
 
 type TQuestionCard = {
   _id: string;
@@ -14,6 +16,7 @@ type TQuestionCard = {
     _id: string;
     name: string;
     picture: string;
+    clerkId: string;
   };
   createdAt: Date;
   clerkId?: string;
@@ -30,6 +33,7 @@ const QuestionCard = ({
   createdAt,
   clerkId,
 }: TQuestionCard) => {
+  const showActionButton = clerkId && clerkId === author.clerkId;
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -44,6 +48,11 @@ const QuestionCard = ({
           </Link>
         </div>
         {/* is signed in add edit delete action */}
+        <SignedIn>
+          {showActionButton && (
+            <EditDeleteAction type="Question" itemId={_id.toString()} />
+          )}
+        </SignedIn>
       </div>
       <div className="mt-3.5 flex flex-wrap gap-2">
         {tags.map((tag) => (

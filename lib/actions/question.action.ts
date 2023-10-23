@@ -1,10 +1,10 @@
 "use server";
-
 import Question from "@/database/question.model";
 import Tag from "@/database/tag.model";
 import { connectToDatabase } from "../mongoose";
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
   GetSavedQuestionsParams,
@@ -14,6 +14,8 @@ import {
 import User from "@/database/user.model";
 import { revalidatePath } from "next/cache";
 import { FilterQuery } from "mongoose";
+import Answer from "@/database/answer.model";
+import Interaction from "@/database/interaction.model";
 
 export async function createQuestion(params: CreateQuestionParams) {
   try {
@@ -192,6 +194,24 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     return {
       questions: user.saved,
     };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    await connectToDatabase();
+    const { questionId, path } = params;
+    await Question.deleteOne({ _id: questionId });
+    await Answer.deleteMany({ question: questionId });
+    await Interaction.deleteMany({ question: questionId });
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
+    revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Metric from "../shared/Metric";
 import { shortenNumber, getTimestamp } from "@/lib/utils";
 import { SignedIn } from "@clerk/nextjs";
+import EditDeleteAction from "../shared/EditDeleteAction";
 // import EditDeleteAction from "../shared/EditDeleteAction";
 
 interface Props {
@@ -30,7 +31,7 @@ const AnswerCard = ({
   upvotes,
   createdAt,
 }: Props) => {
-  // const showActionButtons = clerkId && clerkId === author.clerkId;
+  const showActionButtons = clerkId && clerkId === author.clerkId;
 
   return (
     <Link
@@ -43,15 +44,14 @@ const AnswerCard = ({
             {getTimestamp(createdAt)}
           </span>
           <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1">
-            {question.title}
+            {question?.title}
           </h3>
         </div>
 
         <SignedIn>
-          {/* {showActionButtons && (
-            <EditDeleteAction type="Answer" itemId={JSON.stringify(_id)} />
-          )} */}
-          edit & delete
+          {showActionButtons && (
+            <EditDeleteAction type="Answer" itemId={_id.toString()} />
+          )}
         </SignedIn>
       </div>
 
