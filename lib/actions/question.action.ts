@@ -197,3 +197,41 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     throw error;
   }
 }
+
+export async function editQuestion(params: any) {
+  console.log(params);
+  const question = await Question.findOne({ _id: params._id });
+
+  console.log("here 206*******", question);
+  const newTags = params?.tags;
+  const oldTags = question.tags;
+  const newTagDocuments = [];
+  for (const singleOldTag of oldTags) {
+    if (!newTags.includes(singleOldTag)) {
+      // remove question from tag
+      const tag = await Tag.findByIdAndUpdate(
+        { _id: singleOldTag._id },
+        {
+          $pull: { questions: question?._id },
+        }
+      );
+    } else {
+      newTagDocuments.push(singleOldTag);
+    }
+  }
+  for (const tag of newTags) {
+    if (!oldTags.includes(tag)) {
+      const newTag = await Tag.findOneAndUpdate(
+        { name: { $regex: new RegExp(`^${tag}$`, "i") } },
+        { $setOnInsert: { name: tag }, $push: { questions: question._id } },
+        { upsert: true, new: true }
+      );
+      newTagDocuments.push(newTag._id);
+    }
+  }
+  console.log(newTagDocuments, "newTagDocuments");
+  question.tags = newTagDocuments;
+  question.title = params?.title;
+  question.content = params?.content;
+  await question.save();
+}

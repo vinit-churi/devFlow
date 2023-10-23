@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { QuestionsSchema } from "@/lib/validations";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
-import { createQuestion } from "@/lib/actions/question.action";
+import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { useRouter, usePathname } from "next/navigation";
 import { useTheme } from "@/context/ThemeProvider";
 
@@ -29,6 +29,7 @@ interface IQuestionProps {
     title: string;
     explanation: string;
     tags: string[];
+    _id?: string;
   };
 }
 
@@ -37,6 +38,7 @@ const Question = ({
   type = "create",
   prevData,
 }: IQuestionProps) => {
+  console.log(prevData, "from here");
   const router = useRouter();
   const pathname = usePathname();
   const { mode } = useTheme();
@@ -91,14 +93,24 @@ const Question = ({
     setIsSubmitting(true);
     // console.log(values);
     try {
-      await createQuestion({
-        title: values.title,
-        content: values.explanation,
-        tags: values.tags,
-        author: JSON.parse(mongoUserId),
-        path: pathname,
-      });
-      router.push("/");
+      if (type === "edit") {
+        await editQuestion({
+          title: values.title,
+          content: values.explanation,
+          tags: values.tags,
+          _id: prevData?._id,
+        });
+        router.refresh();
+      } else {
+        await createQuestion({
+          title: values.title,
+          content: values.explanation,
+          tags: values.tags,
+          author: JSON.parse(mongoUserId),
+          path: pathname,
+        });
+        router.push("/");
+      }
     } catch {
     } finally {
       setIsSubmitting(false);
@@ -147,7 +159,7 @@ const Question = ({
                   // @ts-ignore
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
-                  initialValue={""}
+                  initialValue={prevData?.explanation ?? ""}
                   onBlur={field.onBlur}
                   onEditorChange={(content) => {
                     console.log(content);

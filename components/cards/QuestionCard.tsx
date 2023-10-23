@@ -2,6 +2,8 @@ import Link from "next/link";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
 import { getTimestamp, shortenNumber } from "@/lib/utils";
+import { getUserById } from "@/lib/actions/user.action";
+import Image from "next/image";
 
 type TQuestionCard = {
   _id: string;
@@ -19,7 +21,7 @@ type TQuestionCard = {
   clerkId?: string;
 };
 
-const QuestionCard = ({
+const QuestionCard = async ({
   _id,
   title,
   tags,
@@ -30,8 +32,41 @@ const QuestionCard = ({
   createdAt,
   clerkId,
 }: TQuestionCard) => {
+  let userId: undefined | string;
+  let userIsAuthor: boolean = false;
+  if (clerkId) {
+    const { _id } = await getUserById({ userId: clerkId });
+    userId = _id;
+  }
+  if (userId?.toString() === author._id.toString()) {
+    userIsAuthor = true;
+  }
   return (
-    <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
+    <div className="card-wrapper relative rounded-[10px] p-9 sm:px-11">
+      <div className="absolute right-4 top-4 flex gap-2">
+        {userIsAuthor && (
+          <>
+            <Link href={`/question/${_id}/delete`}>
+              <Image
+                src="/assets/icons/trash.svg"
+                alt="delete"
+                width={16}
+                height={16}
+                className="cursor-pointer"
+              />
+            </Link>
+            <Link href={`/edit-question/${_id}`}>
+              <Image
+                src="/assets/icons/edit.svg"
+                alt="edit"
+                width={16}
+                height={16}
+                className="cursor-pointer"
+              />
+            </Link>
+          </>
+        )}
+      </div>
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
         <div>
           <span className="subtle-medium text-dark400_light700 line-clamp-1 flex sm:hidden">
