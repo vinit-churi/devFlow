@@ -235,3 +235,14 @@ export async function editQuestion(params: any) {
   question.content = params?.content;
   await question.save();
 }
+
+export async function deleteUserQuestion(params: { questionId: string }) {
+  const { questionId } = params;
+  // questions: { $in: [questionId]}
+  const relatedTags = await Tag.find({ questions: { $in: [questionId] } });
+  console.log(relatedTags, "relatedTags");
+  // for (const tag of relatedTags) {
+  //   console.log(tag._id, "tag._id");
+  // }
+  await Question.findByIdAndDelete(questionId);
+}

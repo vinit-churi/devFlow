@@ -4,6 +4,7 @@ import Metric from "../shared/Metric";
 import { getTimestamp, shortenNumber } from "@/lib/utils";
 import { getUserById } from "@/lib/actions/user.action";
 import Image from "next/image";
+import DeleteQuestion from "../shared/DeleteQuestion";
 
 type TQuestionCard = {
   _id: string;
@@ -46,15 +47,7 @@ const QuestionCard = async ({
       <div className="absolute right-4 top-4 flex gap-2">
         {userIsAuthor && (
           <>
-            <Link href={`/question/${_id}/delete`}>
-              <Image
-                src="/assets/icons/trash.svg"
-                alt="delete"
-                width={16}
-                height={16}
-                className="cursor-pointer"
-              />
-            </Link>
+            <DeleteQuestion _id={_id.toString()} />
             <Link href={`/edit-question/${_id}`}>
               <Image
                 src="/assets/icons/edit.svg"
