@@ -54,7 +54,6 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   console.log({ eventType });
-
   if (eventType === "user.created") {
     const { id, email_addresses, image_url, username, first_name, last_name } =
       evt.data;
@@ -72,9 +71,19 @@ export async function POST(req: Request) {
   }
 
   if (eventType === "user.updated") {
-    const { id, email_addresses, image_url, username, first_name, last_name } =
-      evt.data;
+    const {
+      id,
+      email_addresses,
+      image_url,
+      username,
+      first_name,
+      last_name,
+      public_metadata,
+    } = evt.data;
 
+    console.log(evt.data, "look closely");
+    console.log(evt);
+    console.log("updated");
     // Create a new user in your database
     const mongoUser = await updateUser({
       clerkId: id,
@@ -83,6 +92,9 @@ export async function POST(req: Request) {
         username: username!,
         email: email_addresses[0].email_address,
         picture: image_url,
+        bio: (public_metadata?.bio as string) || "",
+        location: (public_metadata?.location as string) || "",
+        portfoliowebsite: (public_metadata?.portfolioLink as string) || "",
       },
       path: `/profile/${id}`,
     });

@@ -1,5 +1,5 @@
 "use server";
-
+import { clerkClient } from "@clerk/nextjs";
 import User from "@/database/user.model";
 import { connectToDatabase } from "../mongoose";
 import {
@@ -42,6 +42,8 @@ export async function updateUser(userData: UpdateUserParams) {
     await connectToDatabase();
 
     const { clerkId, updateData, path } = userData;
+    console.log("===============look here=================");
+    console.log(updateData);
     const user = await User.findOneAndUpdate({ clerkId }, updateData, {
       new: true,
     });
@@ -52,6 +54,25 @@ export async function updateUser(userData: UpdateUserParams) {
     throw error;
   }
 }
+
+export async function updateClerkUser(userData) {
+  try {
+    await connectToDatabase();
+    // console.log(userData);
+    clerkClient.users.updateUser(userData.clerkId, {
+      username: userData.username as string,
+      publicMetadata: {
+        portfolioLink: userData.portfolioLink as string,
+        bio: userData.bio as string,
+        location: userData.location as string,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function deleteUser(params: DeleteUserParams) {
   try {
     await connectToDatabase();
