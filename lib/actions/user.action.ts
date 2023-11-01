@@ -38,12 +38,13 @@ export async function createUser(userData: CreateUserParams) {
 }
 
 export async function updateUser(userData: UpdateUserParams) {
+  console.log("===============look here=================");
+  console.log(userData);
+
   try {
     await connectToDatabase();
 
     const { clerkId, updateData, path } = userData;
-    console.log("===============look here=================");
-    console.log(updateData);
     const user = await User.findOneAndUpdate({ clerkId }, updateData, {
       new: true,
     });
