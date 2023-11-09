@@ -34,7 +34,7 @@ const Question = ({ mongoUserId, type, questionDetails }: IQuestionProps) => {
   const { mode } = useTheme();
   const editorRef = useRef(null);
   const parsedQuestionDetails = JSON.parse(questionDetails || "{}");
-  const groupedTags = parsedQuestionDetails.tags.map(
+  const groupedTags = parsedQuestionDetails?.tags?.map(
     (tag: { name: string }) => tag.name
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
