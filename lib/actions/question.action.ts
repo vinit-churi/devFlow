@@ -1,5 +1,5 @@
 "use server";
-import Question from "@/database/question.model";
+import Question, { IQuestion } from "@/database/question.model";
 import Tag from "@/database/tag.model";
 import { connectToDatabase } from "../mongoose";
 import {
@@ -230,6 +230,25 @@ export async function editQuestion(params: EditQuestionParams) {
     question.content = content;
     await question.save();
     revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+interface IGetTopQuestionsParams {}
+
+export async function getTopQuestions(
+  params: IGetTopQuestionsParams
+): Promise<{ questions: IQuestion[] }> {
+  try {
+    await connectToDatabase();
+    const questions = await Question.find({})
+      .limit(5)
+      .sort({ views: -1, createdAt: -1 });
+    return {
+      questions,
+    };
   } catch (error) {
     console.log(error);
     throw error;
