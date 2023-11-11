@@ -74,3 +74,21 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
     throw error;
   }
 }
+
+export async function getPopularTags(): Promise<{
+  tags: (ITag & { totalQuestions: number })[];
+}> {
+  try {
+    await connectToDatabase();
+    // const tags = await Tag.find({}).limit(10).sort({ questionCount: -1 });
+    const tags = await Tag.aggregate([
+      { $addFields: { totalQuestions: { $size: "$questions" } } },
+      { $sort: { totalQuestions: -1 } },
+      { $limit: 4 },
+    ]);
+    return { tags };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
