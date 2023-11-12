@@ -8,8 +8,12 @@ import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/cards/QuestionCard";
 import { getQuestions } from "@/lib/actions/question.action";
 
-export default async function Home() {
-  const result = await getQuestions({});
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
+  const result = await getQuestions({ searchQuery: searchParams.search });
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -25,7 +29,7 @@ export default async function Home() {
           route="/"
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
-          placeholder="Search for questions"
+          placeholder="Search for questions.."
           otherClasses="flex-1"
         />
         <Filter

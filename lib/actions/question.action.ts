@@ -48,12 +48,18 @@ export async function createQuestion(params: CreateQuestionParams) {
 }
 
 export async function getQuestions(params: GetQuestionsParams) {
+  console.log(params);
+  const { searchQuery } = params;
   try {
     await connectToDatabase();
-    const questions = await Question.find({})
+    const questions = await Question.find({
+      title: { $regex: new RegExp(searchQuery || "", "i") },
+    })
       .populate({ path: "tags", model: Tag })
       .populate({ path: "author", model: User })
       .sort({ createdAt: -1 });
+
+    console.log(questions);
     return {
       questions,
     };
