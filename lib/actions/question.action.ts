@@ -185,9 +185,15 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     await connectToDatabase();
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
     console.log(filter);
-    const query: FilterQuery<typeof Question> = searchQuery
-      ? { title: { $regex: new RegExp(searchQuery, "i") } }
-      : {};
+    let query: FilterQuery<typeof Question> = {};
+    if (searchQuery && searchQuery !== "") {
+      query = {
+        $or: [
+          { title: { $regex: new RegExp(searchQuery, "i") } },
+          { content: { $regex: new RegExp(searchQuery, "i") } },
+        ],
+      };
+    }
 
     const user = await User.findOne({ clerkId }).populate({
       path: "saved",

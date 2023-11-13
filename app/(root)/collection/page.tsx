@@ -6,11 +6,12 @@ import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/cards/QuestionCard";
 import { getSavedQuestions } from "@/lib/actions/question.action";
 import { auth } from "@clerk/nextjs";
-export default async function Home() {
+import { SearchParamsProps } from "@/types";
+export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = auth();
-  //   if(userId)
   const result = await getSavedQuestions({
     clerkId: userId as string,
+    searchQuery: searchParams.q,
   });
   return (
     <>
