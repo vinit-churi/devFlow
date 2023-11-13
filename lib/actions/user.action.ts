@@ -77,7 +77,10 @@ export async function getAllUsers(props: GetAllUsersParams) {
     let query = {};
     if (searchQuery && searchQuery !== "") {
       query = {
-        name: { $regex: searchQuery, $options: "i" },
+        $or: [
+          { name: { $regex: searchQuery, $options: "i" } },
+          { username: { $regex: searchQuery, $options: "i" } },
+        ],
       };
     }
     const users = await User.find(query).sort({ createdAt: -1 });
