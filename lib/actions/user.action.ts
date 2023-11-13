@@ -13,6 +13,7 @@ import {
 import { revalidatePath } from "next/cache";
 import Question from "@/database/question.model";
 import Answer from "@/database/answer.model";
+import { FilterQuery } from "mongoose";
 
 export async function getUserById(params: any) {
   try {
@@ -74,7 +75,7 @@ export async function getAllUsers(props: GetAllUsersParams) {
   try {
     await connectToDatabase();
     const { searchQuery } = props;
-    let query = {};
+    let query: FilterQuery<typeof User> = {};
     if (searchQuery && searchQuery !== "") {
       query = {
         $or: [
