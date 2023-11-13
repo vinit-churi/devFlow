@@ -51,8 +51,8 @@ export async function getQuestions(params: GetQuestionsParams) {
   try {
     await connectToDatabase();
 
-    const { searchQuery } = params;
-
+    const { searchQuery, filter } = params;
+    console.log(filter);
     const query: FilterQuery<typeof Question> = {};
     if (searchQuery) {
       query.$or = [
@@ -64,6 +64,14 @@ export async function getQuestions(params: GetQuestionsParams) {
         },
       ];
     }
+    if (filter === "newest") {
+      query.createdAt = {
+        $gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+      };
+    } else if (filter === "unanswered") {
+      query.answers = { $size: 0 };
+    }
+    console.log(query);
     const questions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
       .populate({ path: "author", model: User })

@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import {
   Select,
   SelectContent,
@@ -8,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface IFilterProps {
   filters: {
@@ -19,9 +19,23 @@ interface IFilterProps {
 }
 
 const Filter = ({ filters, otherClasses, containerClasses }: IFilterProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const currentSearchParams = new URLSearchParams(searchParams);
+  let filter = currentSearchParams.get("filter");
+  if (!filter) {
+    filter = filters[0].value;
+    currentSearchParams.set("filter", filter);
+    router.push(`${pathname}?${currentSearchParams.toString()}`);
+  }
+  function handleFilterChange(value: string) {
+    currentSearchParams.set("filter", value);
+    router.push(`${pathname}?${currentSearchParams.toString()}`);
+  }
   return (
     <div className={`relative ${containerClasses}`}>
-      <Select>
+      <Select defaultValue={filter} onValueChange={handleFilterChange}>
         <SelectTrigger
           className={`${otherClasses} body-regular light-border background-light800_dark300 text-dark500_light700 border px-5 py-2.5`}
         >
