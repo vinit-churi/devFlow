@@ -4,8 +4,11 @@ import { UserFilters } from "@/constants/filters";
 import { getAllUsers } from "@/lib/actions/user.action";
 import UserCard from "@/components/cards/UserCard";
 import Link from "next/link";
-const page = async () => {
-  const result = await getAllUsers({});
+import { SearchParamsProps } from "@/types";
+const page = async ({ searchParams }: SearchParamsProps) => {
+  const result = await getAllUsers({
+    searchQuery: searchParams.q,
+  });
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>

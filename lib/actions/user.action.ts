@@ -73,8 +73,14 @@ export async function deleteUser(params: DeleteUserParams) {
 export async function getAllUsers(props: GetAllUsersParams) {
   try {
     await connectToDatabase();
-    // const { page=1, pageSize=20, filter, searchQuery } = props;
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const { searchQuery } = props;
+    let query = {};
+    if (searchQuery && searchQuery !== "") {
+      query = {
+        name: { $regex: searchQuery, $options: "i" },
+      };
+    }
+    const users = await User.find(query).sort({ createdAt: -1 });
     return { users };
   } catch (error) {
     console.log(error);
