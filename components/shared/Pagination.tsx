@@ -24,11 +24,10 @@ const Pagination = ({
   };
   return (
     <div className={` flex w-max gap-4 text-white ${otherClasses}`}>
-      {/* {`${total} ${page} ${limit}`} */}
       <Button
         onClick={prevPage}
         disabled={page === 1}
-        className="primary-gradient"
+        className="primary-gradient w-24"
       >
         Previous
       </Button>
@@ -38,7 +37,7 @@ const Pagination = ({
       <Button
         onClick={nextPage}
         disabled={page * limit >= total}
-        className="primary-gradient"
+        className="primary-gradient w-24"
       >
         Next
       </Button>
