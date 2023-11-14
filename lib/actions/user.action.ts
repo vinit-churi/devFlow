@@ -74,7 +74,23 @@ export async function deleteUser(params: DeleteUserParams) {
 export async function getAllUsers(props: GetAllUsersParams) {
   try {
     await connectToDatabase();
-    const { searchQuery } = props;
+    const { searchQuery, filter } = props;
+    let sortOptions = {};
+
+    switch (filter) {
+      case "new_users":
+        sortOptions = { joinedAt: -1 };
+        break;
+      case "old_users":
+        sortOptions = { joinedAt: 1 };
+        break;
+      case "top_contributors":
+        sortOptions = { reputation: -1 };
+        break;
+      default:
+        break;
+    }
+
     let query: FilterQuery<typeof User> = {};
     if (searchQuery && searchQuery !== "") {
       query = {
@@ -84,7 +100,7 @@ export async function getAllUsers(props: GetAllUsersParams) {
         ],
       };
     }
-    const users = await User.find(query).sort({ createdAt: -1 });
+    const users = await User.find(query).sort(sortOptions);
     return { users };
   } catch (error) {
     console.log(error);

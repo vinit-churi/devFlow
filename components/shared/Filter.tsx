@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import {
   Select,
   SelectContent,
@@ -8,6 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { formUrlQuery } from "@/lib/utils";
 
 interface IFilterProps {
   filters: {
@@ -19,9 +22,32 @@ interface IFilterProps {
 }
 
 const Filter = ({ filters, otherClasses, containerClasses }: IFilterProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentFilter = searchParams.get("filter");
+  const [active, setActive] = useState(currentFilter || "");
+  function handleChange(item: string) {
+    if (active === item) {
+      setActive("");
+      const newUrl = formUrlQuery({
+        params: searchParams.toString(),
+        key: "filter",
+        value: null,
+      });
+      router.push(newUrl, { scroll: false });
+    } else {
+      setActive(item);
+      const newUrl = formUrlQuery({
+        params: searchParams.toString(),
+        key: "filter",
+        value: item.toLowerCase(),
+      });
+      router.push(newUrl, { scroll: false });
+    }
+  }
   return (
     <div className={`relative ${containerClasses}`}>
-      <Select>
+      <Select onValueChange={handleChange}>
         <SelectTrigger
           className={`${otherClasses} body-regular light-border background-light800_dark300 text-dark500_light700 border px-5 py-2.5`}
         >
