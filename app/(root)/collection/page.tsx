@@ -1,4 +1,3 @@
-import HomeFilters from "@/components/home/HomeFilters";
 import Filter from "@/components/shared/Filter";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import { QuestionFilters } from "@/constants/filters";
@@ -28,13 +27,13 @@ export default async function Home({ searchParams }: SearchParamsProps) {
         <Filter
           filters={QuestionFilters}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
-          containerClasses="hidden max-md:flex"
+          containerClasses="flex"
         />
       </div>
-      <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
         {result.questions.length > 0 ? (
           <>
+            {/* @ts-ignore */}
             {result.questions.map((question) => (
               <QuestionCard
                 key={question._id}

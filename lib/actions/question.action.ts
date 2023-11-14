@@ -214,19 +214,21 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     }
 
     let sortOptions = {};
-
     switch (filter) {
-      case "newest":
+      case "most_recent":
         sortOptions = { createdAt: -1 };
         break;
-      case "frequent":
+      case "oldest":
+        sortOptions = { createdAt: 1 };
+        break;
+      case "most_voted":
+        sortOptions = { upvotes: -1 };
+        break;
+      case "most_viewed":
         sortOptions = { views: -1 };
         break;
-      case "unanswered":
-        query.answers = { $size: 0 };
-        break;
-      default:
-        sortOptions = { createdAt: -1 };
+      case "most_answered":
+        sortOptions = { answers: -1 };
         break;
     }
 
