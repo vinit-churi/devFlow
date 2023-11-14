@@ -202,7 +202,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
   try {
     await connectToDatabase();
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
-    console.log(filter);
+
     let query: FilterQuery<typeof Question> = {};
     if (searchQuery && searchQuery !== "") {
       query = {
@@ -213,6 +213,23 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       };
     }
 
+    let sortOptions = {};
+
+    switch (filter) {
+      case "newest":
+        sortOptions = { createdAt: -1 };
+        break;
+      case "frequent":
+        sortOptions = { views: -1 };
+        break;
+      case "unanswered":
+        query.answers = { $size: 0 };
+        break;
+      default:
+        sortOptions = { createdAt: -1 };
+        break;
+    }
+
     const user = await User.findOne({ clerkId }).populate({
       path: "saved",
       model: Question,
@@ -220,7 +237,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       options: {
         skip: (page - 1) * pageSize,
         limit: pageSize,
-        sort: { createdAt: -1 },
+        sort: sortOptions,
       },
       populate: [
         { path: "tags", model: Tag },
