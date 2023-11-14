@@ -14,7 +14,7 @@ interface Props {
   userId: string;
   totalAnswers: number;
   page?: number;
-  filter?: number;
+  filter?: string;
 }
 
 const AllAnswers = async ({
@@ -24,16 +24,14 @@ const AllAnswers = async ({
   page,
   filter,
 }: Props) => {
-  const result = await getAnswers({ questionId });
-
+  const result = await getAnswers({ questionId, sortBy: filter });
+  console.log(filter);
   const { userId: clerkId } = auth();
   // @ts-ignore
   let mongoUser: null | any;
   if (clerkId) {
     mongoUser = await getUserById({ userId: clerkId });
   }
-
-  console.log("debugging");
 
   return (
     <div className="mt-11 w-full">
