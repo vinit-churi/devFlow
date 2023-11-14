@@ -8,11 +8,14 @@ import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/cards/QuestionCard";
 import { getQuestions } from "@/lib/actions/question.action";
 import { SearchParamsProps } from "@/types";
+import Pagination from "@/components/shared/Pagination";
 
 export default async function Home({ searchParams }: SearchParamsProps) {
-  const result = await getQuestions({
+  const { questions, total } = await getQuestions({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
+    page: Number(searchParams.page) || 1,
+    pageSize: Number(searchParams.pageSize) || 5,
   });
   return (
     <>
@@ -40,9 +43,9 @@ export default async function Home({ searchParams }: SearchParamsProps) {
       </div>
       <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {result.questions.length > 0 ? (
+        {questions.length > 0 ? (
           <>
-            {result.questions.map((question) => (
+            {questions.map((question) => (
               <QuestionCard
                 key={question._id}
                 _id={question._id}
@@ -55,6 +58,12 @@ export default async function Home({ searchParams }: SearchParamsProps) {
                 createdAt={question.createdAt}
               />
             ))}
+            <Pagination
+              total={total}
+              page={Number(searchParams.page) || 1}
+              limit={Number(searchParams.pageSize) || 5}
+              otherClasses="mx-auto mt-5 w-full"
+            />
           </>
         ) : (
           <NoResult
