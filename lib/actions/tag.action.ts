@@ -33,12 +33,50 @@ export async function GetTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
   try {
     await connectToDatabase();
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
     let query: FilterQuery<ITag> = {};
     if (searchQuery && searchQuery.length > 0) {
       query = { name: { $regex: searchQuery, $options: "i" } };
     }
-    const tags = await Tag.find(query);
+
+    let filterOptions = {};
+    switch (filter) {
+      case "popular":
+        filterOptions = { followersCount: -1, questionsCount: -1 };
+        break;
+      case "recent":
+        filterOptions = { createdOn: -1 };
+        break;
+      case "name":
+        filterOptions = { name: -1 };
+        break;
+      case "old":
+        filterOptions = { createdOn: 1 };
+        break;
+      default:
+        break;
+    }
+    const aggregationPipeline = [
+      {
+        $match: query,
+      },
+      {
+        $project: {
+          name: 1,
+          followers: 1,
+          questions: 1,
+          followersCount: { $size: "$followers" },
+          questionsCount: { $size: "$questions" },
+        },
+      },
+      {
+        $sort: filterOptions,
+      },
+    ];
+
+    // Use aggregationPipeline in your Mongoose query
+    const tags = await Tag.aggregate(aggregationPipeline);
+    // const tags = (await Tag.find(query).sort(filterOptions));
     return { tags };
   } catch (error) {
     console.log(error);
