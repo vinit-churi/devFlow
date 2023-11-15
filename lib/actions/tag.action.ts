@@ -33,7 +33,9 @@ export async function GetTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
   try {
     await connectToDatabase();
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+    const skipAmount = (page - 1) * pageSize;
+
     let query: FilterQuery<ITag> = {};
     if (searchQuery && searchQuery.length > 0) {
       query = { name: { $regex: searchQuery, $options: "i" } };
@@ -56,28 +58,14 @@ export async function getAllTags(params: GetAllTagsParams) {
       default:
         break;
     }
-    const aggregationPipeline = [
-      {
-        $match: query,
-      },
-      {
-        $project: {
-          name: 1,
-          followers: 1,
-          questions: 1,
-          followersCount: { $size: "$followers" },
-          questionsCount: { $size: "$questions" },
-        },
-      },
-      {
-        $sort: filterOptions,
-      },
-    ];
-
-    // Use aggregationPipeline in your Mongoose query
-    const tags = await Tag.aggregate(aggregationPipeline);
-    // const tags = (await Tag.find(query).sort(filterOptions));
-    return { tags };
+    const tags = await Tag.find(query)
+      .sort(filterOptions)
+      .skip(skipAmount)
+      .limit(pageSize);
+    const totalTags = await Tag.countDocuments(query);
+    const isNext = totalTags > skipAmount + tags.length;
+    console.log(tags);
+    return { tags, isNext };
   } catch (error) {
     console.log(error);
     throw error;
