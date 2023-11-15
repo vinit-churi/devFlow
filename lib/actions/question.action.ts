@@ -209,7 +209,9 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
 export async function getSavedQuestions(params: GetSavedQuestionsParams) {
   try {
     await connectToDatabase();
-    const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
+    const { clerkId, page = 1, pageSize = 1, filter, searchQuery } = params;
+
+    const skipAmount = (page - 1) * pageSize;
 
     let query: FilterQuery<typeof Question> = {};
     if (searchQuery && searchQuery !== "") {
@@ -245,8 +247,8 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       model: Question,
       match: query,
       options: {
-        skip: (page - 1) * pageSize,
-        limit: pageSize,
+        skip: skipAmount,
+        limit: pageSize + 1,
         sort: sortOptions,
       },
       populate: [
@@ -257,8 +259,11 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       ],
     });
     if (!user) throw new Error("User not found");
+    const savedQuestions = user.saved;
+    const isNext = savedQuestions.length > pageSize;
     return {
       questions: user.saved,
+      isNext,
     };
   } catch (error) {
     console.log(error);
