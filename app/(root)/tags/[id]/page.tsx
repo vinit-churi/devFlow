@@ -1,6 +1,7 @@
 import QuestionCard from "@/components/cards/QuestionCard";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import { TagFilters } from "@/constants/filters";
 import { getQuestionsByTagId } from "@/lib/actions/tag.action";
@@ -9,12 +10,12 @@ import { URLProps } from "@/types";
 const page = async ({ params, searchParams }: URLProps) => {
   const result = await getQuestionsByTagId({
     tagId: params.id,
-    page: 1,
     searchQuery: searchParams.q,
+    page: searchParams?.page ? +searchParams?.page : 1,
   });
   console.log(result);
   return (
-    <div>
+    <>
       <h1 className="h1-bold text-dark100_light900">{result.tagTitle}</h1>
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
@@ -57,7 +58,13 @@ const page = async ({ params, searchParams }: URLProps) => {
           />
         )}
       </div>
-    </div>
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={result.isNext}
+        />
+      </div>
+    </>
   );
 };
 

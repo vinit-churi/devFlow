@@ -87,7 +87,7 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
         : {},
       options: {
         skip: (page - 1) * pageSize,
-        limit: pageSize,
+        limit: pageSize + 1,
         sort: { createdAt: -1 },
       },
       populate: [
@@ -96,9 +96,17 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
       ],
     });
     if (!tag) throw new Error("tag not found");
+    const isNext = tag.questions.length > pageSize;
+    // tag.questions = tag.questions.pop();
+    // console.log(tag.questions.length, "look here");
+    // console.log(tag.questions);
+    if (isNext) {
+      tag.questions.pop();
+    }
     return {
       tagTitle: tag.name,
       questions: tag.questions,
+      isNext,
     };
   } catch (error) {
     console.log(error);
