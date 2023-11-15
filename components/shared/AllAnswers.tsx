@@ -89,7 +89,10 @@ const AllAnswers = async ({
         ))}
       </div>
       <div className="mt-10">
-        <Pagination pageNumber={page ? +page : 1} isNext={result.isNext} />
+        <Pagination
+          pageNumber={page ? +page : 1}
+          isNext={result?.isNext as boolean}
+        />
       </div>
     </div>
   );
