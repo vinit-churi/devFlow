@@ -209,8 +209,8 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
 export async function getSavedQuestions(params: GetSavedQuestionsParams) {
   try {
     await connectToDatabase();
-    const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
-
+    const { clerkId, page = 1, pageSize = 1, filter, searchQuery } = params;
+    const skipAmount = (page - 1) * pageSize;
     let query: FilterQuery<typeof Question> = {};
     if (searchQuery && searchQuery !== "") {
       query = {
@@ -221,7 +221,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       };
     }
 
-    let sortOptions = {};
+    let sortOptions = { createdAt: -1 };
     switch (filter) {
       case "most_recent":
         sortOptions = { createdAt: -1 };
@@ -240,26 +240,96 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
         break;
     }
 
-    const user = await User.findOne({ clerkId }).populate({
-      path: "saved",
-      model: Question,
-      match: query,
-      options: {
-        skip: (page - 1) * pageSize,
-        limit: pageSize,
-        sort: sortOptions,
+    const result = await User.aggregate([
+      { $match: { clerkId } },
+      {
+        $lookup: {
+          from: "questions",
+          localField: "saved",
+          foreignField: "_id",
+          as: "savedQuestions",
+          pipeline: [
+            { $match: query },
+            { $skip: skipAmount },
+            { $limit: pageSize },
+            { $sort: sortOptions },
+            {
+              $lookup: {
+                from: "tags",
+                localField: "tags",
+                foreignField: "_id",
+                as: "tags",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "author",
+                foreignField: "_id",
+                as: "author",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "upvotes",
+                foreignField: "_id",
+                as: "upvotes",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "downvotes",
+                foreignField: "_id",
+                as: "downvotes",
+              },
+            },
+            // Repeat $lookup for 'upvotes' and 'downvotes' if needed
+          ],
+        },
       },
-      populate: [
-        { path: "tags", model: Tag },
-        { path: "author", model: User },
-        { path: "upvotes", model: User },
-        { path: "downvotes", model: User },
-      ],
-    });
-    if (!user) throw new Error("User not found");
+      { $unwind: "$savedQuestions" },
+      { $count: "totalQuestions" },
+      {
+        $group: {
+          _id: null,
+          totalQuestions: { $sum: 1 },
+          savedQuestions: { $push: "$savedQuestions" },
+        },
+      },
+    ]);
+    console.log(result);
+    const isNext =
+      result[0].totalQuestions > skipAmount + result[0].savedQuestions.length;
     return {
-      questions: user.saved,
+      questions: result[0].savedQuestions,
+      isNext,
     };
+
+    // const user = await User.findOne({ clerkId }).populate({
+    //   path: "saved",
+    //   model: Question,
+    //   match: query,
+    //   options: {
+    //     skip: skipAmount,
+    //     limit: pageSize,
+    //     sort: sortOptions,
+    //   },
+    //   populate: [
+    //     { path: "tags", model: Tag },
+    //     { path: "author", model: User },
+    //     { path: "upvotes", model: User },
+    //     { path: "downvotes", model: User },
+    //   ],
+    // })
+    // if (!user) throw new Error("User not found");
+    // const totalQuestions = await Question.countDocuments(query);
+    // const isNext = totalQuestions > skipAmount + questions.length;
+    // return {
+    //   questions: user.saved,
+    //   isNext
+    // };
   } catch (error) {
     console.log(error);
     throw error;
