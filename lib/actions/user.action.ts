@@ -74,7 +74,10 @@ export async function deleteUser(params: DeleteUserParams) {
 export async function getAllUsers(props: GetAllUsersParams) {
   try {
     await connectToDatabase();
-    const { searchQuery, filter } = props;
+    const { searchQuery, filter, page = 1, pageSize = 1 } = props;
+
+    const skipAmount = (page - 1) * pageSize;
+
     let sortOptions = {};
 
     switch (filter) {
@@ -100,8 +103,14 @@ export async function getAllUsers(props: GetAllUsersParams) {
         ],
       };
     }
-    const users = await User.find(query).sort(sortOptions);
-    return { users };
+    const users = await User.find(query)
+      .skip(skipAmount)
+      .limit(pageSize)
+      .sort(sortOptions);
+
+    const totalUsers = await User.countDocuments(query);
+    const isNext = totalUsers > skipAmount + users.length;
+    return { users, isNext };
   } catch (error) {
     console.log(error);
     throw error;
