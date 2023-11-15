@@ -17,7 +17,7 @@ const page = async ({
   searchParams,
 }: {
   params: { id: string };
-  searchParams: SearchParamsProps & { filter: string };
+  searchParams: SearchParamsProps & { filter: string; page: string };
 }) => {
   const result = await getQuestionById({ questionId: params.id });
   const { userId: clerkId } = auth();
@@ -102,6 +102,7 @@ const page = async ({
       <AllAnswers
         totalAnswers={result.answers.length}
         // questionId={JSON.stringify(result._id)}
+        page={searchParams.page ? +searchParams.page : 1}
         filter={searchParams.filter}
         questionId={result._id.toString()}
         userId={mongoUser._id.toString()}

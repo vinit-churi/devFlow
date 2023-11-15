@@ -144,9 +144,14 @@ export async function getUserQuestions(params: GetUserStatsParams) {
     const totalQuestions = await Question.countDocuments({ author: userId });
     const userQuestions = await Question.find({ author: userId })
       .sort({ views: -1, upvotes: -1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
       .populate("author", "clerkId name picture")
       .populate("tags", "_id name");
-    return { totalQuestions, questions: userQuestions };
+
+    const isNext =
+      totalQuestions > (page - 1) * pageSize + userQuestions.length;
+    return { totalQuestions, questions: userQuestions, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -170,9 +175,9 @@ export async function getUserAnswers(params: GetUserStatsParams) {
       .populate("question", "_id title")
       .populate("author", "_id clerkId name picture");
 
-    const isNextAnswer = totalAnswers > skipAmount + userAnswers.length;
+    const isNext = totalAnswers > skipAmount + userAnswers.length;
 
-    return { totalAnswers, answers: userAnswers, isNextAnswer };
+    return { totalAnswers, answers: userAnswers, isNext };
   } catch (error) {
     console.log(error);
     throw error;

@@ -8,6 +8,7 @@ import ParseHTML from "./ParseHTML";
 import Votes from "./Votes";
 import { auth } from "@clerk/nextjs";
 import { getUserById } from "@/lib/actions/user.action";
+import Pagination from "./Pagination";
 
 interface Props {
   questionId: string;
@@ -24,7 +25,7 @@ const AllAnswers = async ({
   page,
   filter,
 }: Props) => {
-  const result = await getAnswers({ questionId, sortBy: filter });
+  const result = await getAnswers({ questionId, sortBy: filter, page });
   console.log(filter);
   const { userId: clerkId } = auth();
   // @ts-ignore
@@ -86,6 +87,9 @@ const AllAnswers = async ({
             <ParseHTML data={answer.content} />
           </article>
         ))}
+      </div>
+      <div className="mt-10">
+        <Pagination pageNumber={page ? +page : 1} isNext={result.isNext} />
       </div>
     </div>
   );
