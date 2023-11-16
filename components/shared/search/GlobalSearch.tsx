@@ -56,7 +56,7 @@ const GlobalSearch = () => {
           className="paragraph-regular text-dark400_light700 no-focus placeholder background-light800_darkgradient border-none shadow-none outline-none"
         />
       </div>
-      {isOpen && <GlobalResult />}
+      {isOpen && <GlobalResult setIsOpen={setIsOpen} />}
     </div>
   );
 };
