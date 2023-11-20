@@ -11,8 +11,6 @@ import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
 
 export default async function Home({ searchParams }: SearchParamsProps) {
-  const globalSearch = searchParams.global ? searchParams.global : "";
-  console.log("globalSearch", globalSearch);
   const result = await getQuestions({
     searchQuery: searchParams.q,
     filter: searchParams.filter,

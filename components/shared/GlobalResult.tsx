@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import GlobalFilters from "./search/GlobalFilters";
+import { searchAll } from "@/lib/actions/search.action";
 const GlobalResult = ({
   setIsOpen,
 }: {
@@ -39,14 +40,18 @@ const GlobalResult = ({
     const fetchResult = async () => {
       setLoading(true);
       try {
-        const data = await new Promise(() => {});
-        setResult(data);
+        const data = await searchAll({ searchQuery: global || "" });
+        console.log(data, "current data");
+        setResult(data.result);
       } catch (e) {
         console.log(e);
       } finally {
         setLoading(false);
       }
     };
+    if (global) {
+      fetchResult();
+    }
   }, [global, type]);
   useEffect(() => {
     const handleClickOutside = (event: any) => {
@@ -79,7 +84,7 @@ const GlobalResult = ({
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex max-h-80 flex-col gap-2 overflow-y-auto">
             {result.length > 0 ? (
               result.map((item: any, index: number) => {
                 return (

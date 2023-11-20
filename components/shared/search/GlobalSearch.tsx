@@ -36,7 +36,7 @@ const GlobalSearch = () => {
         });
         router.push(newUrl, { scroll: false });
       }
-    }, 300);
+    }, 1000);
     return () => clearTimeout(delayDebounceFn);
   }, [search, pathname, router, searchParams, query]);
   return (
