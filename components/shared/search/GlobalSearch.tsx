@@ -23,13 +23,18 @@ const GlobalSearch = () => {
         });
         router.push(newUrl, { scroll: false });
       } else {
-        if (query) {
-          const newUrl = removeKeysFromQuery({
-            params: searchParams.toString(),
-            keysToRemove: ["global", "type"],
-          });
-          router.push(newUrl, { scroll: false });
-        }
+        const newUrl = removeKeysFromQuery({
+          params: searchParams.toString(),
+          keysToRemove: ["global"],
+        });
+        router.push(newUrl, { scroll: false });
+      }
+      if (query) {
+        const newUrl = removeKeysFromQuery({
+          params: searchParams.toString(),
+          keysToRemove: ["global", "type"],
+        });
+        router.push(newUrl, { scroll: false });
       }
     }, 300);
     return () => clearTimeout(delayDebounceFn);
